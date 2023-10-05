@@ -2,7 +2,7 @@
 session_start();
 if (isset($_SESSION['username'])) {
     header("location: dashboard.php");
-    exit; // Keluar dari skrip agar tidak menjalankan bagian bawah
+    exit;
 }
 include 'config.php';
 
