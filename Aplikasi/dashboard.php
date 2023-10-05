@@ -10,11 +10,9 @@ include 'config.php'; // Pastikan Anda memiliki file config.php dengan koneksi k
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $namaTernak = $_POST['nama_ternak'];
     $waktuPengingat = $_POST['waktu_pengingat'];
-    $stockpakan = $_POST['takaran_pakan'];
-    $takaranpakan = $_POST['stock_pakan'];
 
-    // Validasi input
-    if (empty($namaTernak) || empty($waktuPengingat || empty($stockpakan || empty($takaranpakan)))) {
+
+    if (empty($namaTernak) || empty($waktuPengingat)) {
         $error = "Field tidak boleh kosong, harus diisi.";
     } else {
         $user_id = $_SESSION['user_id']; // Mengambil user_id dari session
