@@ -1,32 +1,26 @@
 <?php
-session_start();
-if (isset($_SESSION['username'])) {
-    header("location: dashboard.php");
-    exit; // Keluar dari skrip agar tidak menjalankan bagian bawah
-}
-include 'config.php';
+$errorMessage = $successMessage = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    include 'config.php';
 
-    // Validasi input
-    if (empty($username) || empty($password)) {
-        $error = "-> Failed, Username dan password tidak boleh kosong.";
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+    $telegram_id = $_POST["telegram_id"];
+    $kota = $_POST["kota"];
+
+    if (empty($username) || empty($password) || empty($telegram_id) || empty($kota)) {
+        $errorMessage = "Tolong isi semua kolom yang diperlukan.";
     } else {
-        // Periksa pengguna dalam database
-        $sql = "SELECT * FROM pengguna WHERE username='$username' AND password='$password'";
-        $result = mysqli_query($conn, $sql);
+        $sql = "INSERT INTO pengguna (username, password, telegram_id, kota) VALUES ('$username', '$password', '$telegram_id', '$kota')";
 
-        if (mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_assoc($result);
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $row['username'];
-
-            header("location: dashboard.php");
+        if ($conn->query($sql) === TRUE) {
+            $successMessage = "Registrasi berhasil!";
         } else {
-            $error = "-> Failed, Username atau Password tidak valid.";
+            $errorMessage = "Error saat mendaftar: " . $conn->error;
         }
+
+        $conn->close();
     }
 }
 ?>
@@ -47,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg bg-body-white border-bottom">
         <div class="container">
@@ -71,10 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </nav>
     <div class="container login-container">
         <div class="row">
-            <!-- Kolom Login -->
             <div class="col-md-6 order-md-1 order-2">
                 <div id="login" class="border rounded p-3">
-                    <h2 class="text-center fs-3 mb-3">LOGIN</h2>
+                    <h2 class="text-center fs-3 mb-3">SIGNUP</h2>
                     <form action="" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
@@ -84,12 +76,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="Input password...">
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Login</button>
-                            <a href="register.php" class="btn btn-success">Register</a>
+                        <div class="mb-3">
+                            <label for="telegram_id" class="form-label">Telegram ID</label>
+                            <input type="text" class="form-control" id="telegram_id" name="telegram_id" placeholder="Input telegram_id...">
                         </div>
-                        <?php if (isset($error)) {
-                            echo '<div class="alert alert-warning mt-3" role="alert">' . $error . '</div>';
+                        <div class="mb-3">
+                            <label for="text" class="form-label">Kota</label>
+                            <input type="text" class="form-control" id="kota" name="kota" placeholder="Input kota...">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <a href="index.php" class="btn btn-success">Login</a>
+                        </div>
+                        <?php 
+                        if (!empty($errorMessage)) {
+                            echo '<div class="alert alert-danger mt-3" role="alert">' . $errorMessage . '</div>';
+                        }
+                        if (!empty($successMessage)) {
+                            echo '<div class="alert alert-success mt-3" role="alert">' . $successMessage . '</div>';
                         }
                         ?>
                     </form>
@@ -97,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="col-md-6 order-md-2 order-1">
                 <div class="border rounded p-3">
-                    <h2 class="text-center fs-3">Welcome to sign in page</h2>
+                    <h2 class="text-center fs-3">Welcome to sign up page</h2>
                     <p class="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec odio et justo sollicitudin iaculis. Sed at metus at turpis dignissim faucibus.</p>
                 </div>
             </div>
@@ -107,5 +111,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js.map"></script>
 </body>
-
 </html>
