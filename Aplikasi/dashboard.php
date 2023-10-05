@@ -4,8 +4,7 @@ session_start();
 if (!isset($_SESSION['username'])) {
     header("location: index.php");
 }
-
-include 'config.php'; // Pastikan Anda memiliki file config.php dengan koneksi ke database.
+include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $namaTernak = $_POST['nama_ternak'];
@@ -15,8 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($namaTernak) || empty($waktuPengingat)) {
         $error = "Field tidak boleh kosong, harus diisi.";
     } else {
-        $user_id = $_SESSION['user_id']; // Mengambil user_id dari session
-
+        $user_id = $_SESSION['user_id'];
         $query = "INSERT INTO pengingat_ternak (user_id, nama_ternak, waktu_pengingat) 
                   VALUES ('$user_id', '$namaTernak', '$waktuPengingat')";
 
@@ -28,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Mengambil daftar pengingat ternak berdasarkan user_id
 $user_id = $_SESSION['user_id'];
 $query = "SELECT * FROM pengingat_ternak WHERE user_id='$user_id'";
 $result = mysqli_query($conn, $query);
